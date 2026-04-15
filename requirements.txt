@@ -2,3 +2,4 @@ flask
 matplotlib
 pandas
 gunicorn
+gradio
