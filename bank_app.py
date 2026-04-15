@@ -371,7 +371,6 @@ with gr.Blocks(css=css, theme=gr.themes.Soft()) as app:
 
 # MODIFIKASI BAGIAN DEPLOYMENT AGAR MENGHASILKAN QR CODE DI TERMINAL
 
-
 if __name__ == "__main__":
     import time
     

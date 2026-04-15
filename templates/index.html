@@ -48,7 +48,7 @@
 
         h1 { text-align: center; text-shadow: 0 0 15px rgba(255, 8, 68, 0.8); margin-bottom: 30px; }
 
-        .nav { display: none; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .nav { display: none; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
         .nav button {
             background: transparent; border: 1px solid var(--primary-red); color: #fff;
             padding: 10px 25px; border-radius: 30px; cursor: pointer; transition: all 0.4s; font-weight: bold;
@@ -98,6 +98,11 @@
         .status-box { margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(255, 8, 68, 0.15); border-left: 4px solid var(--primary-red); text-align: center; }
         .link-text { text-align: center; margin-top: 20px; cursor: pointer; color: var(--secondary-red); font-size: 14px; }
 
+        /* Styling tambahan untuk list Tentang Aplikasi */
+        .info-list { list-style: none; padding: 0; margin-top: 20px; }
+        .info-list li { background: rgba(255,255,255,0.05); margin-bottom: 10px; padding: 12px 15px; border-radius: 8px; border-left: 3px solid var(--primary-red); line-height: 1.5; }
+        .info-list li span { color: var(--secondary-red); font-weight: bold; display: block; font-size: 0.9em; margin-bottom: 3px; }
+
         @media (max-width: 600px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -109,6 +114,7 @@
     <div class="nav" id="mainNav">
         <button onclick="switchView('dashboard')" id="nav-dashboard" class="active">Dashboard</button>
         <button onclick="switchView('transfer')" id="nav-transfer">Transfer</button>
+        <button onclick="switchView('tentang')" id="nav-tentang">Tentang Aplikasi</button>
         <button onclick="logout()" style="border-color: #ff3333; color: #ffb3b3;">Logout</button>
     </div>
 
@@ -180,6 +186,19 @@
             <div id="tf-status" class="status-box" style="display: none;"></div>
         </div>
     </div>
+
+    <div id="view-tentang" class="view">
+        <div class="card" style="max-width: 550px; margin: auto;">
+            <h3 style="text-align: center; color: var(--secondary-red);">ℹ️ Tentang Aplikasi</h3>
+            <ul class="info-list">
+                <li><span>Nama Aplikasi</span> minibank system</li>
+                <li><span>Versi</span> Beta</li>
+                <li><span>Profil Pengembang</span> Hafidz Bayu Prasetyo<br>Sekolah di SMKN 1 PPLG kelas X PPLG 1</li>
+                <li><span>Bahasa Pemrograman</span> Python</li>
+            </ul>
+        </div>
+    </div>
+
 </div>
 
 <script>
