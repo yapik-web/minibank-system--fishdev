@@ -70,6 +70,10 @@ def api_riwayat():
     
     return jsonify({"message": teks, "image": img_base64})
 
+import os
+
 if __name__ == '__main__':
-    print("🚀 Web server berjalan di http://127.0.0.1:5000")
-    app.run(debug=True, port=5000)
+    # Ambil port dari environment variable yang disediakan Render
+    port = int(os.environ.get("PORT", 5000))
+    # Jalankan app dengan host 0.0.0.0 agar bisa diakses publik
+    app.run(host='0.0.0.0', port=port)
