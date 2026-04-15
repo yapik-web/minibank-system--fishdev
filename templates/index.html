@@ -103,6 +103,28 @@
         .info-list li { background: rgba(255,255,255,0.05); margin-bottom: 10px; padding: 12px 15px; border-radius: 8px; border-left: 3px solid var(--primary-red); line-height: 1.5; }
         .info-list li span { color: var(--secondary-red); font-weight: bold; display: block; font-size: 0.9em; margin-bottom: 3px; }
 
+        /* ================= TAMBAHAN CSS BUKTI TRANSFER ================= */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px); overflow: auto;
+        }
+        .receipt-card {
+            background: #ffffff; color: #333; margin: 15% auto; padding: 25px;
+            border-radius: 15px; width: 85%; max-width: 380px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        .receipt-header { text-align: center; margin-bottom: 15px; }
+        .receipt-header h3 { margin: 0; color: #2e7d32; font-family: 'Segoe UI', sans-serif;}
+        .receipt-date { text-align: center; color: #888; font-size: 13px; margin-bottom: 15px; }
+        .receipt-details { border-top: 2px dashed #ccc; border-bottom: 2px dashed #ccc; padding: 15px 0; margin-bottom: 20px; }
+        .receipt-details p { display: flex; justify-content: space-between; margin: 10px 0; font-size: 15px; }
+        .receipt-details strong { color: #555; }
+        .receipt-amount { font-size: 22px; font-weight: bold; text-align: center; color: #111; margin: 15px 0; }
+        /* =============================================================== */
+
         @media (max-width: 600px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -193,6 +215,7 @@
             <ul class="info-list">
                 <li><span>Nama Aplikasi</span> MINIBANK SYSTEM</li>
                 <li><span>Versi</span> Beta</li>
+                <li><span>Deskripsi Singkat</span> Web atau apk ini dibuat untuk mengenalkan anda<br>bagaimana aplikasi yang sekarang sebesar BRI/BCA/DANA,<br>dulunya mungkin sesedehana ini</li>
                 <li><span>Profil Pengembang</span> Hafidz Bayu Prasetyo<br>Rizqi Afif Adilah<br>Diah Ayu Khoeriyah<br>Khumayra Rasti Syaehani</li>
                 <li><span>Kelas</span> X PPLG 1</li>
                 <li><span>Sekolah</span> SMKN 1 KEBUMEN</li>
@@ -203,6 +226,22 @@
 
 </div>
 
+<div id="receipt-modal" class="modal">
+    <div class="receipt-card">
+        <div class="receipt-header">
+            <h3>✅ TRANSAKSI BERHASIL</h3>
+        </div>
+        <div class="receipt-date" id="receipt-date"></div>
+        <div class="receipt-amount" id="receipt-jumlah"></div>
+        <div class="receipt-details">
+            <p><strong>Status:</strong> <span style="color: #2e7d32; font-weight:bold;">Berhasil</span></p>
+            <p><strong>Pengirim:</strong> <span id="receipt-pengirim"></span></p>
+            <p><strong>Penerima:</strong> <span id="receipt-tujuan"></span></p>
+            <p><strong>Metode:</strong> <span>Transfer Bank</span></p>
+        </div>
+        <button class="btn-primary" style="background: #2e7d32;" onclick="closeReceipt()">Selesai</button>
+    </div>
+</div>
 <script>
     let currentUser = null;
 
@@ -285,7 +324,35 @@
         const j = document.getElementById('tf-jumlah').value;
         const data = await apiCall('/api/transfer', {user: currentUser, tujuan: t, jumlah: j});
         showStatus('tf-status', data.message);
-        if(data.message.includes("✅")) { document.getElementById('tf-jumlah').value = ""; cekSaldo(); }
+        
+        if(data.message.includes("✅")) { 
+            // ================= TAMBAHAN JS BUKTI TRANSFER =================
+            // Memasukkan data ke dalam struk
+            document.getElementById('receipt-pengirim').innerText = currentUser;
+            document.getElementById('receipt-tujuan').innerText = t;
+            
+            // Format angka menjadi bentuk Rupiah (contoh: 50000 -> Rp 50.000)
+            let formattedJumlah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(j);
+            document.getElementById('receipt-jumlah').innerText = formattedJumlah;
+            
+            // Tampilkan waktu saat ini format WIB
+            let now = new Date();
+            let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' };
+            document.getElementById('receipt-date').innerText = now.toLocaleDateString('id-ID', options) + " WIB";
+            
+            // Tampilkan Modal
+            document.getElementById('receipt-modal').style.display = 'block';
+            // ==============================================================
+            
+            document.getElementById('tf-jumlah').value = ""; 
+            cekSaldo(); 
+        }
+    }
+
+    // TAMBAHAN FUNGSI JS: Untuk menutup bukti transfer
+    function closeReceipt() {
+        document.getElementById('receipt-modal').style.display = 'none';
+        document.getElementById('tf-status').style.display = 'none'; // bersihkan status transfer juga
     }
 
     async function loadRiwayat() {
