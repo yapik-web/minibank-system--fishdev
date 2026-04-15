@@ -2,7 +2,7 @@ import os
 import json
 import hashlib
 import gradio as gr
-from datetime import datetime  # Untuk mengambil waktu transaksi
+from datetime import datetime, timedelta  # TAMBAHAN: import timedelta untuk penyesuaian jam
 import matplotlib.pyplot as plt  # Untuk menggambar grafik
 import qrcode  # TAMBAHAN: Untuk membuat QR code di terminal
 
@@ -62,8 +62,8 @@ def setor(user, jumlah):
         if jumlah <= 0:
             return "❌ Harus > 0", gr.update(value="")
         
-        # UBAH: Format menjadi Hari dan Menit
-        tanggal_sekarang = datetime.now().strftime("%Y-%m-%d %H:%M") 
+        # UBAH: Format menjadi Hari dan Menit disesuaikan ke WIB (UTC+7)
+        tanggal_sekarang = (datetime.now() + timedelta(hours=7)).strftime("%Y-%m-%d %H:%M") 
         data["users"][user]["saldo"] += jumlah
         data["riwayat"].append({"username": user, "aktivitas": f"Setor: {jumlah}", "tanggal": tanggal_sekarang})
         save_data(data)
@@ -83,8 +83,8 @@ def tarik(user, jumlah):
         if data["users"][user]["saldo"] < jumlah:
             return "❌ Saldo tidak cukup!", gr.update(value="")
         
-        # UBAH: Format menjadi Hari dan Menit
-        tanggal_sekarang = datetime.now().strftime("%Y-%m-%d %H:%M")
+        # UBAH: Format menjadi Hari dan Menit disesuaikan ke WIB (UTC+7)
+        tanggal_sekarang = (datetime.now() + timedelta(hours=7)).strftime("%Y-%m-%d %H:%M")
         data["users"][user]["saldo"] -= jumlah
         data["riwayat"].append({"username": user, "aktivitas": f"Tarik: {jumlah}", "tanggal": tanggal_sekarang})
         save_data(data)
@@ -108,8 +108,8 @@ def transfer(user, tujuan, jumlah):
         if data["users"][user]["saldo"] < jumlah:
             return "❌ Saldo tidak cukup!", gr.update(value=""), gr.update(value="")
         
-        # UBAH: Format menjadi Hari dan Menit
-        tanggal_sekarang = datetime.now().strftime("%Y-%m-%d %H:%M")
+        # UBAH: Format menjadi Hari dan Menit disesuaikan ke WIB (UTC+7)
+        tanggal_sekarang = (datetime.now() + timedelta(hours=7)).strftime("%Y-%m-%d %H:%M")
         data["users"][user]["saldo"] -= jumlah
         data["users"][tujuan]["saldo"] += jumlah
         
@@ -132,8 +132,8 @@ def riwayat_dan_grafik(user):
     
     for r in data["riwayat"]:
         if r["username"] == user:
-            # Fallback jika data riwayat lama menggunakan format lama
-            tgl = r.get("tanggal", datetime.now().strftime("%Y-%m-%d %H:%M"))
+            # Fallback jika data riwayat lama menggunakan format lama (disesuaikan ke WIB juga)
+            tgl = r.get("tanggal", (datetime.now() + timedelta(hours=7)).strftime("%Y-%m-%d %H:%M"))
             logs.append(f"[{tgl}] {r['aktivitas']}")
             
             # Ekstrak waktu per JAM (YYYY-MM-DD HH:00) untuk grafik
