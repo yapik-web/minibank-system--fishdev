@@ -3,3 +3,4 @@ matplotlib
 pandas
 gunicorn
 gradio
+qrcode
