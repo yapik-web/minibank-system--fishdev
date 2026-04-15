@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Mini Bank System -FishDev</title>
+    <style>
+        /* CSS Tema Merah Dinamis & Animasi */
+        :root {
+            --primary-red: #ff0844;
+            --secondary-red: #ffb199;
+            --dark-bg: rgba(20, 0, 0, 0.8);
+            --glass-border: rgba(255, 100, 100, 0.2);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #1a0000, #4d0000, #ff0844, #8b0000);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: var(--dark-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 35px;
+            overflow: hidden;
+        }
+
+        h1 { text-align: center; text-shadow: 0 0 15px rgba(255, 8, 68, 0.8); margin-bottom: 30px; }
+
+        .nav { display: none; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .nav button {
+            background: transparent; border: 1px solid var(--primary-red); color: #fff;
+            padding: 10px 25px; border-radius: 30px; cursor: pointer; transition: all 0.4s; font-weight: bold;
+        }
+        .nav button:hover, .nav button.active {
+            background: linear-gradient(45deg, var(--primary-red), #ff4d4d);
+            box-shadow: 0 0 20px rgba(255, 8, 68, 0.6); transform: scale(1.05);
+        }
+
+        /* Password Wrapper for Show/Hide */
+        .pass-wrapper { position: relative; width: 100%; }
+        .toggle-pass {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: var(--secondary-red); font-size: 14px; user-select: none;
+            transition: 0.3s;
+        }
+        .toggle-pass:hover { color: white; }
+
+        .form-group { margin-bottom: 20px; }
+        input {
+            width: 100%; padding: 14px; border-radius: 10px; border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.08); color: #fff; box-sizing: border-box;
+            outline: none; transition: all 0.3s; font-size: 16px;
+        }
+        input:focus { background: rgba(255, 255, 255, 0.15); border: 1px solid var(--primary-red); }
+
+        button.btn-primary {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            background: linear-gradient(45deg, #d50000, var(--primary-red));
+            color: white; font-weight: bold; cursor: pointer; transition: all 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        button.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 8, 68, 0.6); }
+
+        .view { display: none; animation: slideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; }
+        .view.active { display: block; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .card { background: rgba(0, 0, 0, 0.4); padding: 25px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        textarea {
+            width: 100%; background: rgba(0, 0, 0, 0.6); color: var(--secondary-red);
+            border: 1px solid var(--glass-border); border-radius: 10px; padding: 15px; box-sizing: border-box;
+        }
+        img.grafik { width: 100%; border-radius: 10px; border: 2px solid rgba(255, 8, 68, 0.5); }
+        .status-box { margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(255, 8, 68, 0.15); border-left: 4px solid var(--primary-red); text-align: center; }
+        .link-text { text-align: center; margin-top: 20px; cursor: pointer; color: var(--secondary-red); font-size: 14px; }
+
+        @media (max-width: 600px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1> Mini Bank System -FishDev</h1>
+
+    <div class="nav" id="mainNav">
+        <button onclick="switchView('dashboard')" id="nav-dashboard" class="active">Dashboard</button>
+        <button onclick="switchView('transfer')" id="nav-transfer">Transfer</button>
+        <button onclick="logout()" style="border-color: #ff3333; color: #ffb3b3;">Logout</button>
+    </div>
+
+    <div id="view-login" class="view active">
+        <h3 style="text-align: center; color: var(--secondary-red);"> Login</h3>
+        <div class="form-group">
+            <input type="text" id="log-user" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <div class="pass-wrapper">
+                <input type="password" id="log-pass" placeholder="Password">
+                <span class="toggle-pass" onclick="togglePassword('log-pass')">👁️ Show</span>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="login()"> Login</button>
+        <div id="log-status" class="status-box" style="display: none;"></div>
+        <div class="link-text" onclick="switchView('register')">Belum punya akun? Daftar disini</div>
+    </div>
+
+    <div id="view-register" class="view">
+        <h3 style="text-align: center; color: var(--secondary-red);"> Register</h3>
+        <div class="form-group">
+            <input type="text" id="reg-user" placeholder="Username Baru">
+        </div>
+        <div class="form-group">
+            <div class="pass-wrapper">
+                <input type="password" id="reg-pass" placeholder="Password Baru">
+                <span class="toggle-pass" onclick="togglePassword('reg-pass')"> Show</span>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="register()">Daftar</button>
+        <div id="reg-status" class="status-box" style="display: none;"></div>
+        <div class="link-text" onclick="switchView('login')">Sudah punya akun? Login</div>
+    </div>
+
+    <div id="view-dashboard" class="view">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3> Rekening</h3>
+                <h2 id="dash-saldo" style="color: var(--primary-red);">Saldo: 0</h2>
+                <button class="btn-primary" onclick="cekSaldo()"> Update</button>
+            </div>
+            <div class="card">
+                <h3> Transaksi</h3>
+                <input type="number" id="nominal-trx" placeholder="Rp..." style="margin-bottom:15px;">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-primary" onclick="setor()"> Setor</button>
+                    <button class="btn-primary" onclick="tarik()" style="background: #800000;"> Tarik</button>
+                </div>
+                <div id="trx-status" class="status-box" style="display: none;"></div>
+            </div>
+        </div>
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 30px 0;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn-primary" onclick="loadRiwayat()" style="width: auto; padding: 12px 40px;"> Riwayat & Grafik</button>
+        </div>
+        <div class="dashboard-grid">
+            <textarea id="area-riwayat" rows="12" readonly></textarea>
+            <div><img id="img-grafik" class="grafik" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div id="view-transfer" class="view">
+        <div class="card" style="max-width: 450px; margin: auto;">
+            <h3 style="text-align: center; color: var(--secondary-red);"> Transfer</h3>
+            <input type="text" id="tf-tujuan" placeholder="Username Tujuan" style="margin-bottom:15px;">
+            <input type="number" id="tf-jumlah" placeholder="Rp..." style="margin-bottom:15px;">
+            <button class="btn-primary" onclick="transfer()"> Kirim</button>
+            <div id="tf-status" class="status-box" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+
+    // FUNGSI BARU: Toggle Password Visibility
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        const btn = input.nextElementSibling;
+        if (input.type === "password") {
+            input.type = "text";
+            btn.innerText = " Hide";
+        } else {
+            input.type = "password";
+            btn.innerText = " Show";
+        }
+    }
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + viewId).classList.add('active');
+        if (currentUser) {
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            if(document.getElementById('nav-' + viewId)) document.getElementById('nav-' + viewId).classList.add('active');
+        }
+    }
+
+    async function apiCall(endpoint, data) {
+        const res = await fetch(endpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+        return res.json();
+    }
+
+    function showStatus(elementId, message) {
+        const el = document.getElementById(elementId);
+        el.innerText = message; el.style.display = 'block';
+    }
+
+    async function register() {
+        const u = document.getElementById('reg-user').value;
+        const p = document.getElementById('reg-pass').value;
+        const data = await apiCall('/api/register', {username: u, password: p});
+        showStatus('reg-status', data.message);
+        if(data.message.includes("✅")) setTimeout(() => switchView('login'), 1500);
+    }
+
+    async function login() {
+        const u = document.getElementById('log-user').value;
+        const p = document.getElementById('log-pass').value;
+        const data = await apiCall('/api/login', {username: u, password: p});
+        showStatus('log-status', data.message);
+        if(data.user) {
+            currentUser = data.user;
+            document.getElementById('mainNav').style.display = 'flex';
+            switchView('dashboard'); cekSaldo();
+        }
+    }
+
+    function logout() {
+        currentUser = null; document.getElementById('mainNav').style.display = 'none';
+        showStatus('log-status', " Berhasil logout!"); switchView('login');
+    }
+
+    async function cekSaldo() {
+        const data = await apiCall('/api/saldo', {user: currentUser});
+        document.getElementById('dash-saldo').innerText = data.message.replace("💰 ", "");
+    }
+
+    async function setor() {
+        const val = document.getElementById('nominal-trx').value;
+        const data = await apiCall('/api/setor', {user: currentUser, jumlah: val});
+        showStatus('trx-status', data.message); cekSaldo(); loadRiwayat();
+    }
+
+    async function tarik() {
+        const val = document.getElementById('nominal-trx').value;
+        const data = await apiCall('/api/tarik', {user: currentUser, jumlah: val});
+        showStatus('trx-status', data.message); cekSaldo(); loadRiwayat();
+    }
+
+    async function transfer() {
+        const t = document.getElementById('tf-tujuan').value;
+        const j = document.getElementById('tf-jumlah').value;
+        const data = await apiCall('/api/transfer', {user: currentUser, tujuan: t, jumlah: j});
+        showStatus('tf-status', data.message);
+        if(data.message.includes("✅")) { document.getElementById('tf-jumlah').value = ""; cekSaldo(); }
+    }
+
+    async function loadRiwayat() {
+        const data = await apiCall('/api/riwayat', {user: currentUser});
+        document.getElementById('area-riwayat').value = data.message;
+        const img = document.getElementById('img-grafik');
+        if(data.image) { img.src = "data:image/png;base64," + data.image; img.style.display = 'block'; }
+    }
+</script>
+</body>
+</html>
