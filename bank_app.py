@@ -6,18 +6,42 @@ from datetime import datetime, timedelta  # TAMBAHAN: import timedelta untuk pen
 import matplotlib.pyplot as plt  # Untuk menggambar grafik
 import qrcode  # TAMBAHAN: Untuk membuat QR code di terminal
 
-DATA_FILE = "bank.json"
+# =====================================================================
+# BAGIAN YANG DIUBAH: INTEGRASI FIREBASE REALTIME DATABASE
+# =====================================================================
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 
-# LOAD & SAVE
+# 1. Masukkan Kunci Rahasia dan URL Database
+# Pastikan file firebase-key.json ada di folder yang sama
+cred = credentials.Certificate("firebase-key.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://minibank-system-default-rtdb.asia-southeast1.firebasedatabase.app/'
+})
+
+# LOAD & SAVE DARI FIREBASE
 def load_data():
-    if not os.path.exists(DATA_FILE):
+    ref = db.reference('/') # Ambil semua data dari "akar" database
+    data = ref.get()
+    
+    # Jika database masih kosong sama sekali
+    if data is None:
         return {"users": {}, "riwayat": []}
-    with open(DATA_FILE, "r") as f:
-        return json.load(f)
+        
+    # Pastikan strukturnya aman
+    if "users" not in data:
+        data["users"] = {}
+    if "riwayat" not in data or data["riwayat"] is None:
+        data["riwayat"] = []
+        
+    return data
 
-def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+def save_data(new_data):
+    ref = db.reference('/')
+    ref.set(new_data) # Timpa database dengan data terbaru
+
+# =====================================================================
 
 data = load_data()
 
