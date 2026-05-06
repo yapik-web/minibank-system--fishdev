@@ -1,0 +1,6 @@
+Flask
+gradio
+matplotlib
+qrcode
+firebase-admin
+gunicorn
