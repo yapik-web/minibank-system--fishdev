@@ -1,6 +1,0 @@
-flask
-matplotlib
-pandas
-gunicorn
-gradio
-qrcode
